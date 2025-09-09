@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 import '../const/colors.dart';
 import '../const/fonts.dart';
+import 'doctor/doctor_form.dart'; // ⬅️ import your doctor form page
+import 'user/dashboard_page.dart';  // ⬅️ import your user dashboard
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
+
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  String selectedRole = "User";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, // ✅ Prevent bottom overflow
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: SingleChildScrollView( // ✅ Make page scrollable
+        child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -31,6 +40,25 @@ class SignupPage extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text("Sign up to get started", style: AppTextStyles.subtitle),
                 const SizedBox(height: 40),
+
+                // 🔹 Role Selection
+                DropdownButtonFormField<String>(
+                  value: selectedRole,
+                  decoration: const InputDecoration(
+                    labelText: "Sign up as",
+                    border: OutlineInputBorder(),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: "User", child: Text("User")),
+                    DropdownMenuItem(value: "Doctor", child: Text("Doctor")),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      selectedRole = value!;
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
 
                 // 🔹 Full Name
                 TextField(
@@ -87,7 +115,21 @@ class SignupPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 15),
                     ),
                     onPressed: () {
-                      // TODO: Handle Signup
+                      if (selectedRole == "Doctor") {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const DoctorFormPage(),
+                          ),
+                        );
+                      } else {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const DashboardPage(),
+                          ),
+                        );
+                      }
                     },
                     child: Text(
                       "Sign Up",

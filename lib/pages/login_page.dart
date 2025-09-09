@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import '../const/colors.dart';
 import '../const/fonts.dart';
+import 'signup_page.dart';
+import 'user/dashboard_page.dart';
+import 'doctor/doctor_dashboard.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  String selectedRole = "User"; // default role
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +39,25 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 10),
               Text("Login to continue", style: AppTextStyles.subtitle),
               const SizedBox(height: 40),
+
+              // 🔹 Role Selection (User / Doctor)
+              DropdownButtonFormField<String>(
+                value: selectedRole,
+                decoration: const InputDecoration(
+                  labelText: "Login as",
+                  border: OutlineInputBorder(),
+                ),
+                items: const [
+                  DropdownMenuItem(value: "User", child: Text("User")),
+                  DropdownMenuItem(value: "Doctor", child: Text("Doctor")),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    selectedRole = value!;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
 
               // 🔹 Email field
               TextField(
@@ -62,7 +91,26 @@ class LoginPage extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
                   onPressed: () {
-                    // TODO: handle login
+                    if (selectedRole == "Doctor") {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const DoctorDashboard(
+                            doctorName: "Dr. Sarah Johnson",
+                            specialization: "Cardiologist",
+                            email: "sarah.johnson@example.com",
+                            profilePic: "assets/icons/icon1.png",
+                          ),
+                        ),
+                      );
+                    } else {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const DashboardPage(),
+                        ),
+                      );
+                    }
                   },
                   child: Text(
                     "Login",
@@ -93,7 +141,7 @@ class LoginPage extends StatelessWidget {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   icon: Image.asset(
-                    "assets/icons/google.png", // keep google logo in assets/icons/
+                    "assets/icons/google.png",
                     height: 24,
                   ),
                   label: const Text("Sign in with Google"),
@@ -116,7 +164,10 @@ class LoginPage extends StatelessWidget {
                   Text("Don’t have an account?", style: AppTextStyles.subtitle),
                   TextButton(
                     onPressed: () {
-                      // TODO: Navigate to Signup page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SignupPage()),
+                      );
                     },
                     child: Text(
                       "Sign Up",
