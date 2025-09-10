@@ -1,196 +1,210 @@
 import 'package:flutter/material.dart';
-import '../const/colors.dart';
-import '../const/fonts.dart';
-import 'doctor/doctor_form.dart'; // ⬅️ import your doctor form page
-import 'user/dashboard_page.dart';  // ⬅️ import your user dashboard
-
+import 'login_page.dart';
+import 'user/dashboard_page.dart';
+import 'doctor/doctor_form.dart';
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<SignupPage> createState() => _SignUpViewState();
 }
 
-class _SignupPageState extends State<SignupPage> {
-  String selectedRole = "User";
+class _SignUpViewState extends State<SignupPage> {
+  bool isCheck = false;
+  String role = "Patient"; // Default role
+
+  // Simple text controllers
+  final TextEditingController firstNameCtrl = TextEditingController();
+  final TextEditingController lastNameCtrl = TextEditingController();
+  final TextEditingController emailCtrl = TextEditingController();
+  final TextEditingController passwordCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    var media = MediaQuery.of(context).size;
+
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: SingleChildScrollView(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // 🔹 App logo/image
-                Center(
-                  child: Image.asset(
-                    "assets/images/image.png",
-                    height: 150,
-                    width: 150,
-                  ),
+                Text(
+                  "Welcome 👋",
+                  style: TextStyle(color: Colors.grey, fontSize: 16),
                 ),
-                const SizedBox(height: 30),
-
-                // 🔹 Heading
-                Text("Create Account", style: AppTextStyles.heading),
-                const SizedBox(height: 10),
-                Text("Sign up to get started", style: AppTextStyles.subtitle),
-                const SizedBox(height: 40),
-
-                // 🔹 Role Selection
-                DropdownButtonFormField<String>(
-                  value: selectedRole,
-                  decoration: const InputDecoration(
-                    labelText: "Sign up as",
-                    border: OutlineInputBorder(),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: "User", child: Text("User")),
-                    DropdownMenuItem(value: "Doctor", child: Text("Doctor")),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedRole = value!;
-                    });
-                  },
+                const SizedBox(height: 5),
+                Text(
+                  "Create Your Account",
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: media.width * 0.08),
 
-                // 🔹 Full Name
+                // --- First Name
                 TextField(
+                  controller: firstNameCtrl,
                   decoration: InputDecoration(
-                    labelText: "Full Name",
-                    labelStyle: AppTextStyles.subtitle,
-                    border: const OutlineInputBorder(),
+                    labelText: "First Name",
                     prefixIcon: const Icon(Icons.person),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: media.width * 0.04),
 
-                // 🔹 Email
+                // --- Last Name
                 TextField(
+                  controller: lastNameCtrl,
+                  decoration: InputDecoration(
+                    labelText: "Last Name",
+                    prefixIcon: const Icon(Icons.person_outline),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                SizedBox(height: media.width * 0.04),
+
+                // --- Email
+                TextField(
+                  controller: emailCtrl,
                   decoration: InputDecoration(
                     labelText: "Email",
-                    labelStyle: AppTextStyles.subtitle,
-                    border: const OutlineInputBorder(),
                     prefixIcon: const Icon(Icons.email),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
+                  keyboardType: TextInputType.emailAddress,
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: media.width * 0.04),
 
-                // 🔹 Password
+                // --- Password
                 TextField(
+                  controller: passwordCtrl,
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Password",
-                    labelStyle: AppTextStyles.subtitle,
-                    border: const OutlineInputBorder(),
                     prefixIcon: const Icon(Icons.lock),
+                    suffixIcon:
+                        const Icon(Icons.visibility_off, color: Colors.grey),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: media.width * 0.04),
 
-                // 🔹 Confirm Password
-                TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: "Confirm Password",
-                    labelStyle: AppTextStyles.subtitle,
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.lock_outline),
-                  ),
+                // --- Role Selection
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ChoiceChip(
+                      label: const Text("Patient"),
+                      selected: role == "Patient",
+                      onSelected: (_) {
+                        setState(() {
+                          role = "Patient";
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                    ChoiceChip(
+                      label: const Text("Doctor"),
+                      selected: role == "Doctor",
+                      onSelected: (_) {
+                        setState(() {
+                          role = "Doctor";
+                        });
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 30),
 
-                // 🔹 Sign Up button
+                SizedBox(height: media.width * 0.05),
+
+                // --- Checkbox Terms
+                Row(
+                  children: [
+                    Checkbox(
+                      value: isCheck,
+                      onChanged: (val) {
+                        setState(() {
+                          isCheck = val ?? false;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        "By continuing you accept our Privacy Policy and Terms of Use",
+                        style: const TextStyle(color: Colors.grey, fontSize: 11),
+                      ),
+                    )
+                  ],
+                ),
+
+                SizedBox(height: media.width * 0.05),
+
+                // --- Register Button
                 SizedBox(
                   width: double.infinity,
+                  height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                    ),
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12))),
                     onPressed: () {
-                      if (selectedRole == "Doctor") {
+                      if (role == "Doctor") {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const DoctorFormPage(),
+                            builder: (context) => const DoctorFormPage(),
                           ),
                         );
+                        
                       } else {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const DashboardPage(),
+                            builder: (context) => const DashboardPage(),
                           ),
                         );
                       }
                     },
-                    child: Text(
-                      "Sign Up",
-                      style: AppTextStyles.semiBoldItalic.copyWith(
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: const Text("Register",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
                   ),
                 ),
-                const SizedBox(height: 20),
 
-                // 🔹 OR divider
-                Row(
-                  children: [
-                    const Expanded(child: Divider(thickness: 1)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text("OR", style: AppTextStyles.subtitle),
-                    ),
-                    const Expanded(child: Divider(thickness: 1)),
-                  ],
-                ),
-                const SizedBox(height: 20),
+                SizedBox(height: media.width * 0.06),
 
-                // 🔹 Google Sign-up button
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    icon: Image.asset(
-                      "assets/icons/google.png",
-                      height: 24,
-                    ),
-                    label: const Text("Sign up with Google"),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      side: BorderSide(color: AppColors.primary),
-                    ),
-                    onPressed: () {
-                      // TODO: Handle Google Sign-up
-                    },
+                // --- Already have account
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginPage(),
+                          ),
+                        );
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Text("Already have an account? ",
+                          style: TextStyle(color: Colors.black, fontSize: 14)),
+                      Text("Login",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold)),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 20),
-
-                // 🔹 Already have an account? Login
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Already have an account?", style: AppTextStyles.subtitle),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context); // back to login
-                      },
-                      child: Text(
-                        "Login",
-                        style: AppTextStyles.regular.copyWith(
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),

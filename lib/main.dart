@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'const/colors.dart';
 import 'const/fonts.dart';
-import 'pages/login_page.dart';
 
+import 'pages/on_board.dart';
 
 void main() {
   runApp(const DoctorAppointmentApp());
@@ -32,7 +32,7 @@ class DoctorAppointmentApp extends StatelessWidget {
           background: AppColors.background,
         ),
       ),
-      home: const LoginPage(),
+      home: const OnBoardingView(),
     );
   }
 }
