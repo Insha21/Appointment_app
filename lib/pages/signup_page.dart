@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
-import 'user/dashboard_page.dart';
 import 'doctor/doctor_form.dart';
+import 'user/profile_setup.dart';
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
@@ -170,7 +170,7 @@ class _SignUpViewState extends State<SignupPage> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const DashboardPage(),
+                            builder: (context) => const CompleteProfileView(),
                           ),
                         );
                       }
