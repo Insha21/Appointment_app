@@ -3,7 +3,7 @@ import 'const/colors.dart';
 import 'const/fonts.dart';
 
 import 'pages/on_board.dart';
-import 'pages/user/Goal_Page.dart';
+
 void main() {
   runApp(const DoctorAppointmentApp());
 }
@@ -32,7 +32,7 @@ class DoctorAppointmentApp extends StatelessWidget {
           background: AppColors.background,
         ),
       ),
-      home: const SetGoalsPage(),
+      home: const OnBoardingView(),
     );
   }
 }
