@@ -1,5 +1,8 @@
-import 'signup_page.dart';
 import 'package:flutter/material.dart';
+import '../../services/doctor_api.dart';
+import 'doctor/doctor_dashboard.dart';
+import 'user/dashboard_page.dart';
+import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,6 +15,10 @@ class _LoginViewState extends State<LoginPage> {
   final TextEditingController emailCtrl = TextEditingController();
   final TextEditingController passwordCtrl = TextEditingController();
   bool obscurePassword = true;
+  bool isLoading = false;
+
+  // dropdown for selecting role
+  String selectedRole = "Doctor"; // default
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +48,27 @@ class _LoginViewState extends State<LoginPage> {
                       fontWeight: FontWeight.w700),
                 ),
                 SizedBox(height: media.width * 0.08),
+
+                // --- Role dropdown
+                DropdownButtonFormField<String>(
+                  value: selectedRole,
+                  items: const [
+                    DropdownMenuItem(value: "Doctor", child: Text("Doctor")),
+                    DropdownMenuItem(value: "Patient", child: Text("Patient")),
+                  ],
+                  onChanged: (val) {
+                    setState(() {
+                      selectedRole = val!;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: "Login as",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
 
                 // --- Email field
                 TextField(
@@ -80,21 +108,7 @@ class _LoginViewState extends State<LoginPage> {
                   ),
                 ),
 
-                const SizedBox(height: 10),
-
-                // --- Forgot password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    "Forgot your password?",
-                    style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                        decoration: TextDecoration.underline),
-                  ),
-                ),
-
-                const Spacer(),
+                const SizedBox(height: 20),
 
                 // --- Login button
                 SizedBox(
@@ -106,52 +120,15 @@ class _LoginViewState extends State<LoginPage> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
                     ),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Logged in successfully!"),
-                      ));
-                    },
-                    child: const Text(
-                      "Login",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                    ),
+                    onPressed: isLoading ? null : _handleLogin,
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            "Login",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600),
+                          ),
                   ),
-                ),
-
-                SizedBox(height: media.width * 0.06),
-
-                // --- Divider
-                Row(
-                  children: [
-                    Expanded(
-                        child: Divider(
-                      color: Colors.grey.withOpacity(0.5),
-                      thickness: 1,
-                    )),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text("Or",
-                          style: TextStyle(color: Colors.black, fontSize: 12)),
-                    ),
-                    Expanded(
-                        child: Divider(
-                      color: Colors.grey.withOpacity(0.5),
-                      thickness: 1,
-                    )),
-                  ],
-                ),
-
-                SizedBox(height: media.width * 0.06),
-
-                // --- Social logins
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _socialButton("assets/img/google.png"),
-                    SizedBox(width: media.width * 0.05),
-                    _socialButton("assets/img/facebook.png"),
-                  ],
                 ),
 
                 const Spacer(),
@@ -159,13 +136,12 @@ class _LoginViewState extends State<LoginPage> {
                 // --- Register option
                 TextButton(
                   onPressed: () {
-                     Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignupPage(),
-                          ),
-                        );
-                        // go back to sign-up
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignupPage(),
+                      ),
+                    );
                   },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -180,8 +156,6 @@ class _LoginViewState extends State<LoginPage> {
                     ],
                   ),
                 ),
-
-                SizedBox(height: media.width * 0.04),
               ],
             ),
           ),
@@ -190,18 +164,58 @@ class _LoginViewState extends State<LoginPage> {
     );
   }
 
-  Widget _socialButton(String assetPath) {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.withOpacity(0.5)),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Center(
-        child: Image.asset(assetPath, width: 22, height: 22),
-      ),
+  Future<void> _handleLogin() async {
+    final email = emailCtrl.text.trim();
+    final password = passwordCtrl.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter email and password")),
+      );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      if (selectedRole == "Doctor") {
+        final doctor = await DoctorApi.loginDoctor(email, password);
+        if (doctor != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => DoctorDashboard(
+                doctorId: doctor["id"],
+                doctorName: doctor["name"],
+                specialization: doctor["specialization"],
+                email: doctor["email"],
+                profilePic: "assets/icons/icon1.png",
+              ),
+            ),
+          );
+        } else {
+          _showError("Invalid email or password for Doctor.");
+        }
+      } else {
+        // no API for patient → just move to dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DashboardPage(
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      _showError("Login failed. Try again later.");
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 }

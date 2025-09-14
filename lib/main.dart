@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'const/colors.dart';
 import 'const/fonts.dart';
-
+import 'Home.dart';
 import 'pages/on_board.dart';
 
 void main() {

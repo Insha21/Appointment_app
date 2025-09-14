@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import 'docinfo_page.dart';
+import '../login_page.dart';
 class DoctorDashboard extends StatelessWidget {
+  final String doctorId;
   final String doctorName;
   final String specialization;
   final String email;
   final String profilePic;
+  
 
   const DoctorDashboard({
     super.key,
+    required this.doctorId,   
     required this.doctorName,
     required this.specialization,
     required this.email,
     required this.profilePic,
+    
   });
 
   @override
@@ -28,7 +34,7 @@ class DoctorDashboard extends StatelessWidget {
               accountName: Text(doctorName),
               accountEmail: Text(email),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage(profilePic), // 👈 doctor’s image
+                backgroundImage: AssetImage(profilePic), 
               ),
             ),
             ListTile(
@@ -36,6 +42,12 @@ class DoctorDashboard extends StatelessWidget {
               title: const Text("My Info"),
               onTap: () {
                 Navigator.pop(context);
+                  Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DoctorInfoPage(doctorId: doctorId), 
+                  ),
+                );
                 // Open doctor info page
               },
             ),
@@ -60,7 +72,12 @@ class DoctorDashboard extends StatelessWidget {
               title: const Text("Logout"),
               onTap: () {
                 Navigator.pop(context);
-                // Add logout logic
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginPage(), 
+                  ),
+                );
               },
             ),
           ],

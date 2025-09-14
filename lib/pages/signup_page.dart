@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'doctor/doctor_form.dart';
 import 'user/profile_setup.dart';
+import '../../services/doctor_api.dart';
+
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
@@ -162,7 +164,7 @@ class _SignUpViewState extends State<SignupPage> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const DoctorFormPage(),
+                            builder: (context) =>  DoctorFormPage(email: emailCtrl.text,password: passwordCtrl.text,),
                           ),
                         );
                         
